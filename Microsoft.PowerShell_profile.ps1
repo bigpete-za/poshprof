@@ -16,7 +16,7 @@ $FormatEnumerationLimit = -1
 function prof { npp $profile }
 
 <# RETURN ALL IP ADDRESSES #> 
-$localipaddress = @(Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter “IPEnabled = $true”).IPAddress
+$localipaddress = @(Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration -Filter “IPEnabled=$true”).IPAddress
 $pubaddr = Resolve-DnsName -Server resolver1.opendns.com -name myip.opendns.com
 $amiadmin = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -like "S-1-5-32-544") 
 
@@ -29,6 +29,7 @@ function force-mkdir($path) {
 }
 <#AUDIBLE PING
 ##
+#>
 function ping-speak ([string] $target) {
 	$speak = new-object System.speech.Synthesis.SpeechSynthesizer
 	While ($true) {if (test-connection $target -count 1 -quiet)
@@ -39,7 +40,6 @@ function ping-speak ([string] $target) {
 	}	
 	}
 }
-#>
 ##Beep-ping
 function ping-beep ([string] $beeper)
 {
@@ -53,7 +53,7 @@ function prep-powercli () {
 
 
 #Spin-wheeloflunch
-Function Spin-WheelOfLunch {
+Function petes-WheelOfLunch {
     $FastFood = @(
                     "Burger King",
                     "McDonald's",
