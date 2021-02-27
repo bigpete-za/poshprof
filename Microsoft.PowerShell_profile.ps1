@@ -1,4 +1,4 @@
-start-transcript -append -OutputDirectory $home'\documents\PowerShell logs\'
+start-transcript -append -OutputDirectory "C:\Users\peters\OneDrive - Cloud Direct\Documents\PowerShell Logs\"
 set-location c:\
 Set-Alias pcx C:\sysTools\procexp.exe
 set-alias npp 'C:\Program Files (x86)\Notepad++\notepad++.exe'
@@ -16,7 +16,7 @@ $FormatEnumerationLimit = -1
 function prof { npp $profile }
 
 <# RETURN ALL IP ADDRESSES #> 
-$localipaddress = @(Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration -Filter “IPEnabled=$true”).IPAddress
+$localipaddress = @(Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration -Filter "IPEnabled=$true").IPAddress
 $pubaddr = Resolve-DnsName -Server resolver1.opendns.com -name myip.opendns.com
 $amiadmin = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -like "S-1-5-32-544") 
 
@@ -58,8 +58,8 @@ Function petes-WheelOfLunch {
                     "Burger King",
                     "McDonald's",
                     "KFC",
-                    "KING PIE ",
-                    "Olé Cafe",
+                    "ole cafe",
+                    "Obs Cafe",
                     "Sunshine Take-Aways & Mini Market",
                     "Fionas Takeaway",
                     "Obz Fisheries and Take Out",
@@ -149,7 +149,6 @@ Function petes-WheelOfLunch {
                 $FastFood,
                 $Mexican,
                 $Authentic,
-                $Japanese,
                 $Pizza,
                 $Burgers,
                 $Frozen,
@@ -164,7 +163,6 @@ Function petes-WheelOfLunch {
                 "Fast Food",
                 "Mexican",
                 "Authentic",
-                "Japanese",
                 "Pizza",
                 "Burgers",
                 "Frozen",
@@ -397,3 +395,8 @@ cls
 #get-motd
 
  get-alias |Get-Random -Count 10 | ft @{label='aliases'; expression={$_.displayname}},helpuri
+# Chocolatey profile
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
+}
