@@ -35,7 +35,7 @@ function ping-speak ([string] $target) {
 	While ($true) {if (test-connection $target -count 1 -quiet)
 	{$speak.Speak($target + " is up!")}
 	else
-	{$speak.Speak( "shit, " + $target + "is down!");
+	{$speak.Speak( "Please wait, " + $target + "is down!");
 	sleep 5
 	}	
 	}
