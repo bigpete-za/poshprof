@@ -1,4 +1,4 @@
-start-transcript -append -OutputDirectory "C:\Users\peters\OneDrive - Cloud Direct\Documents\PowerShell Logs\"
+start-transcript -append -OutputDirectory "C:\Users\peters\OneDrive - Organization\Documents\PowerShell Logs\"
 set-location c:\
 Set-Alias pcx C:\sysTools\procexp.exe
 set-alias npp 'C:\Program Files (x86)\Notepad++\notepad++.exe'
