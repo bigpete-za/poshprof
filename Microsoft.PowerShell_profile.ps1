@@ -1,43 +1,199 @@
-#dotsource downloaded scripts to import them.
-Get-ChildItem -Path "C:\Users\psoule.EXCOTEKKER1\OneDrive - VIADEX LTD\PSDL" | ForEach-Object {. $($_.FullName)}
+start-transcript -append -OutputDirectory "C:\Users\peters\OneDrive - Organization\Documents\PowerShell Logs\"
+set-location c:\
+Set-Alias pcx C:\sysTools\procexp.exe
+set-alias npp 'C:\Program Files (x86)\Notepad++\notepad++.exe'
+set-alias ssh plink
+set-alias sid resolve-sid
+set-alias pop pop-location
+set-alias push push-location
+set-alias gs get-syntax
+set-alias which get-command
 
-start-transcript -append -outputdirectory "C:\Users\psoule.EXCOTEKKER1\OneDrive - VIADEX LTD\VIA-SA-LT089\Documents\WindowsPowerShell\PSLogs\"
-set-alias npp 'C:\Program Files\Notepad++\notepad++.exe'
-$formatenumerationlimit = -1
+add-type -AssemblyName System.speech
 
 
-function prof {npp $profile}
-function resolve-sid($stringsid) {
-	$objSID = New-Object System.Security.Principal.SecurityIdentifier ($sid)
-	$objUser = $objSID.Translate( [System.Security.Principal.NTAccount])
-	$objUser.Value
-}
+$FormatEnumerationLimit = -1
+function prof { npp $profile }
 
-$pubaddr = (Resolve-DnsName -Server resolver1.opendns.com -name myip.opendns.com).ipaddress
-$privatecert = (dir cert:currentuser\my\ -codesigningcert)
-$amiadmin = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -like "S-1-5-32-544")
+<# RETURN ALL IP ADDRESSES #> 
 $localipaddress = @(Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration -Filter "IPEnabled=$true").IPAddress
+$pubaddr = Resolve-DnsName -Server resolver1.opendns.com -name myip.opendns.com
+$amiadmin = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -like "S-1-5-32-544") 
 
-
-Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
-    param($wordToComplete, $commandAst, $cursorPosition)
-        [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Utf8Encoding]::new()
-        $Local:word = $wordToComplete.Replace('"', '""')
-        $Local:ast = $commandAst.ToString().Replace('"', '""')
-        winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition | ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
-        }
+## ForceMKDIR
+function force-mkdir($path) {
+    if (!(Test-Path $path)) {
+        Write-Host "-- Creating full path to: " $path -ForegroundColor White -BackgroundColor DarkGreen
+        New-Item -ItemType Directory -Force -Path $path
+    }
+}
+<#AUDIBLE PING
+##
+#>
+function ping-speak ([string] $target) {
+	$speak = new-object System.speech.Synthesis.SpeechSynthesizer
+	While ($true) {if (test-connection $target -count 1 -quiet)
+	{$speak.Speak($target + " is up!")}
+	else
+	{$speak.Speak( "Please wait, " + $target + "is down!");
+	sleep 5
+	}	
+	}
+}
+##Beep-ping
+function ping-beep ([string] $beeper)
+{
+	while((Test-Connection $beeper -quiet)){};
+	[console]::beep(500,300)
 }
 
-get-alias | get-random -count 10 | ft @{label='aliases'; expression={$_.displayname}},helpuri
-# Import the Chocolatey Profile that contains the necessary code to enable
-# tab-completions to function for `choco`.
-# Be aware that if you are missing these lines from your profile, tab completion
-# for `choco` will not function.
-# See https://ch0.co/tab-completion for details.
-$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile)) {
-  Import-Module "$ChocolateyProfile"
+function prep-powercli () {
+	Get-Module -Name VMware* -ListAvailable | Import-Module
+}
+
+
+#Spin-wheeloflunch
+Function petes-WheelOfLunch {
+    $FastFood = @(
+                    "Burger King",
+                    "McDonald's",
+                    "KFC",
+                    "ole cafe",
+                    "Obs Cafe",
+                    "Sunshine Take-Aways & Mini Market",
+                    "Fionas Takeaway",
+                    "Obz Fisheries and Take Out",
+                    "Narona",
+                    "Spar",
+                    "Steers",
+                    "Altomar Fish And Chips",
+                    "Just drink some water dude."
+                    )
+    $Mexican = @(
+                    "Fat Cactus",
+                    "Panchos",
+                    "Luis Mexican Food & Grill"
+                    )
+    $Authentic = @(
+                    "Blue Marlin Asian Cuisine and Sushi Bar",
+                    "1890 House Sushi and Grill",
+					"Simply Asia",
+					"Wok in a Box",
+                    "Hibachi Buffet"
+                    )
+    $Indian = @(
+                    "Metropolis Grill",
+                    "Curry Mantra"
+                    )
+    $Italian = @(
+                    "Olive Garden",
+                    "Marco's Pizza",
+                    "Mellow Mushroom",
+                    "Atlanta Bread Company",
+                    "Marco Ristorante",
+                    "Mama Mia"
+                    )
+    $Pizza = @(
+                    "Pizza Hut",
+                    "Domino's Pizza",
+					"Portalia",
+					"Mica Schawarma and Pizza",
+					"Pizza Co",
+					"YARD DOGS BOLLOCKS AND PIZZA WAREHOUSE",
+					"Col Cacchio",
+					"love is pizza",
+					"salt and sugar rondebosch",
+					"Bin rashied rondebosch",
+					"narona",
+					"frozen meh"
+                    )
+    $Burgers = @(
+                    "Burger King",
+                    "McDonalds",
+                    "Budddy's Burgers",
+                    "Checkers",
+                    "Jerry's Burger Bar",
+                    "Anvil Burger Co",
+                    "StickyBBQ"
+                    "Redemption Real Burgers",
+                    "Red Robin",
+					"Steers",
+					"Devils Peak",
+					"Hog & Rose",
+					"Burgerboss",
+					"Rocomamas",
+					"Barcelos",
+					"Pedros",
+					"Obs Cafe",
+					"BURGRRR Woodstock",
+					"The Mash Tun"
+                    )
+    $Buffet = @(
+                    "Grill & Barrel",
+					"Food Inn"		
+                    )
+    $Vietnamese = @(
+                    "Monsoon Thai & Vietnamese",
+                    "Thai Pepper"
+                    )
+    $BBQ = @(
+                    "Sticky Fingers BBQ",
+                    "Sonny's BBQ"
+                    )
+    $Frozen = @(
+                    "mcdonalds shake?",
+                    "marcels",
+                    "milky lane"
+                    )
+    $All = @(
+                $FastFood,
+                $Mexican,
+                $Authentic,
+                $Pizza,
+                $Burgers,
+                $Frozen,
+                $Vietnamese,
+                $BBQ,
+                $Buffet,
+                $Greek,
+                $Italian,
+                $Indian
+                )
+    $Captions = @(
+                "Fast Food",
+                "Mexican",
+                "Authentic",
+                "Pizza",
+                "Burgers",
+                "Frozen",
+                "Vietnamese",
+                "BBQ",
+                "Buffet",
+                "Greek",
+                "Italian",
+                "Indian"
+                )
+
+    # The magic happens...
+
+    $SelectionNum = Get-Random -Minimum 0 -Maximum $($All.Length-1)
+    "Type: "+$Captions[$SelectionNum]
+    "Restaurant: "+$All[$SelectionNum][$(Get-Random -Minimum 0 -Maximum $($All[$SelectionNum].Length-1))]
+    }
+
+#SYNTAX FUNCTION
+function get-syntax([string] $cmdlet) {
+   get-command $cmdlet -syntax
+}
+
+#GET IPs Function 
+function get-ips {write-host $localipaddress}
+
+##Function-resolve sid
+function Resolve-SID($stringSid) {
+  $objSID = New-Object System.Security.Principal.SecurityIdentifier($stringSid) 
+  $objUser = $objSID.Translate([System.Security.Principal.NTAccount]) 
+  $objUser.Value
 }
 
 ##MOTD
@@ -92,6 +248,7 @@ Function Get-MOTD {
 } #End Begin
 
   Process {
+	
         If ($ComputerName) {
             If ("$ComputerName" -ne "$env:ComputerName") {
                 # Build Hash to be used for passing parameters to 
@@ -105,6 +262,7 @@ Function Get-MOTD {
                 If ($Credential) {
                     $PSSessionParams.Add('Credential', $Credential)
                 }
+
                 # Create remote powershell session   
                 Try {
                     $RemoteSession = New-PSSession @PSSessionParams
@@ -116,6 +274,7 @@ Function Get-MOTD {
                 $RemoteSession = $null
             }
         }
+        
         # Build Hash to be used for passing parameters to 
         # Invoke-Command commandlet
         $CommandParams = @{
@@ -222,7 +381,7 @@ Function Get-MOTD {
         Write-Host -Object ("Local IPs: ") -ForegroundColor Red -NoNewLine
 		write-host $localipaddress -ForegroundColor Cyan -NoNewline
 		Write-Host -Object (" Public IP: ") -ForegroundColor Red -NoNewLine
-		Write-Host $pubaddr -ForegroundColor Cyan	
+		Write-Host -Object ($pubaddr.ipaddress) -ForegroundColor Cyan	
   } #End Process
 
   End {
@@ -234,3 +393,10 @@ Function Get-MOTD {
 
 cls
 #get-motd
+
+ get-alias |Get-Random -Count 10 | ft @{label='aliases'; expression={$_.displayname}},helpuri
+# Chocolatey profile
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
+}
