@@ -9,17 +9,33 @@ set-alias push push-location
 set-alias gs get-syntax
 set-alias which get-command
 
+#dotsource downloaded scripts to import them.
+Get-ChildItem -Path "C:\Users\peters\OneDrive - organization\PSDL" | ForEach-Object {. $($_.FullName)}
+
 add-type -AssemblyName System.speech
 
+Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
+    param($wordToComplete, $commandAst, $cursorPosition)
+        [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Utf8Encoding]::new()
+        $Local:word = $wordToComplete.Replace('"', '""')
+        $Local:ast = $commandAst.ToString().Replace('"', '""')
+        winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition | ForEach-Object {
+            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+        }
+}
 
 $FormatEnumerationLimit = -1
-function prof { npp $profile }
 
 <# RETURN ALL IP ADDRESSES #> 
 $localipaddress = @(Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration -Filter "IPEnabled=$true").IPAddress
 $pubaddr = Resolve-DnsName -Server resolver1.opendns.com -name myip.opendns.com
 $amiadmin = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -like "S-1-5-32-544") 
+$privatecert = (dir cert:currentuser\my\ -codesigningcert)
 
+function prof { npp $profile }
+function Prompt {
+	$env:COMPUTERNAME + "\" + (Get-Location) + "\PS#> "
+}
 ## ForceMKDIR
 function force-mkdir($path) {
     if (!(Test-Path $path)) {
@@ -392,9 +408,9 @@ Function Get-MOTD {
 } #End Function Get-MOTD
 
 cls
-#get-motd
+get-motd
+get-alias |Get-Random -Count 10 | ft @{label='aliases'; expression={$_.displayname}},helpuri
 
- get-alias |Get-Random -Count 10 | ft @{label='aliases'; expression={$_.displayname}},helpuri
 # Chocolatey profile
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
